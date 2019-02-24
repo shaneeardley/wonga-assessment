@@ -7,12 +7,15 @@ namespace Shane.Common
 {
     public class ConnectionHandler
     {
+        #region class members
         public static IConnection connection;
         public static IModel channel;
         public static string queueName = "shane";
         static EventingBasicConsumer consumer;
         public event EventHandler<BasicDeliverEventArgs> Message_Received;
+        #endregion
 
+        #region public methods
         public void PublishMessage(string sendMessage)
         {
             try
@@ -21,13 +24,32 @@ namespace Shane.Common
                 channel.BasicPublish("", queueName, null, Encoding.UTF8.GetBytes(sendMessage));
                 Console.WriteLine("Message sent successfully! ");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Console.WriteLine($"An error occurred while trying to send a message\r\nError:\r\n{ex.ToString()}");
                 ShutDown();
             }
         }
+        public void ShutDown()
+        {
+            Console.WriteLine("Shutting down, please press enter...");
+            Console.ReadLine();
+            CloseConnection();
+            Environment.Exit(0);
+        }
 
+        public void CloseConnection()
+        {
+            if (channel != null) channel.Dispose();
+            channel = null;
+            if (connection != null) connection.Dispose();
+            connection = null;
+            if (consumer != null)
+            {
+                consumer.Received -= Message_Received;
+                consumer = null;
+            }
+        }
 
         public void InitiateSenderConnection()
         {
@@ -42,8 +64,8 @@ namespace Shane.Common
         public void CreateConnection(string hostName)
         {
             createConnection(hostName);
-        }   
-        
+        }
+
         public void ConsumeQueue(string consumeQueueName)
         {
             consumeQueue(consumeQueueName);
@@ -52,6 +74,9 @@ namespace Shane.Common
         {
             initiateQueue(newQueueName);
         }
+        #endregion
+
+        #region private methods
 
         private void createConnection(string hostName)
         {
@@ -105,25 +130,6 @@ namespace Shane.Common
             }
         }
 
-        public  void ShutDown()
-        {
-            Console.WriteLine("Shutting down, please press enter...");
-            Console.ReadLine();
-            CloseConnection();
-            Environment.Exit(0);
-        }
-
-        public void CloseConnection()
-        {
-            if (channel != null) channel.Dispose();
-            channel = null;
-            if (connection != null) connection.Dispose();
-            connection = null;
-            if (consumer != null)
-            {
-                consumer.Received -= Message_Received;
-                consumer = null;
-            }
-        }
+        #endregion
     }
 }
