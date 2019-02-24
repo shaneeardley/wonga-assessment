@@ -39,6 +39,40 @@ namespace Shane.Common
             this.initiateConnection(true);
         }
 
+        public void CreateConnection(string hostName)
+        {
+            createConnection(hostName);
+        }   
+        
+        public void ConsumeQueue(string consumeQueueName)
+        {
+            consumeQueue(consumeQueueName);
+        }
+        public void InitiateQueue(string newQueueName)
+        {
+            initiateQueue(newQueueName);
+        }
+
+        private void createConnection(string hostName)
+        {
+            var factory = new ConnectionFactory() { HostName = hostName };
+            connection = factory.CreateConnection();
+            channel = connection.CreateModel();
+        }
+
+        private void initiateQueue(string newQueueName)
+        {
+            channel.QueueDeclare(newQueueName, false, false, false, null);
+        }
+
+        private void consumeQueue(string consumeQueueName)
+        {
+            consumer = new EventingBasicConsumer(channel);
+            consumer.Received += Message_Received;
+            channel.BasicConsume(consumeQueueName, true, consumer);
+
+        }
+
         private void initiateConnection(bool isReceiverConnection)
         {
             Console.WriteLine("Connecting to Rabbit MQ Server");
@@ -47,11 +81,9 @@ namespace Shane.Common
             var hostName = Console.ReadLine();
 
             if (string.IsNullOrEmpty(hostName)) hostName = "localhost";
-            var factory = new ConnectionFactory() { HostName = hostName };
             try
             {
-                connection = factory.CreateConnection();
-                channel = connection.CreateModel();
+                createConnection(hostName);
             }
             catch (Exception ex)
             {
@@ -65,14 +97,11 @@ namespace Shane.Common
             var inputQueueName = Console.ReadLine();
             if (!string.IsNullOrEmpty(inputQueueName))
                 queueName = inputQueueName;
-            channel.QueueDeclare(queueName, false, false, false, null);
             Console.WriteLine($"Successfully connected to queue with name {queueName}");
-
+            initiateQueue(queueName);
             if (isReceiverConnection)
             {
-                consumer = new EventingBasicConsumer(channel);
-                consumer.Received += Message_Received;
-                channel.BasicConsume(queueName, true, consumer);
+                consumeQueue(queueName);
             }
         }
 
