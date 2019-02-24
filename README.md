@@ -10,5 +10,5 @@ In order to fulfil the requirements of dispatching and reading messages, a pair 
 ## How to Use
 * Clone the project locally 
 * Navigate to the 'Shane.MQ' directory
-* Run the file 'startup.cmd'. This will run a dotnet restore, build the project, and laund both the sender and receiver locally
+* Run the file [startup.cmd](./Shane.MQ/startup.cmd). This will run a dotnet restore, build the project, and launch both the sender and receiver locally
 * Alternatively, open the Shane.MQ.sln sollution file, and use Visual Studio to build and run the projects
