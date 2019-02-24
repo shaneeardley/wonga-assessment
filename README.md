@@ -1,4 +1,4 @@
-# Rabit MQ Assessment - Shane Eardley
+# Rabbit MQ Assessment - Shane Eardley
 
 ## Preface
 In order to fulfil the requirements of dispatching and reading messages, a pair of dotnetcore console applications, using the RabbitMQ messaging service, were created.
